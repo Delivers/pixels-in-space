@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PublicChannels>
+  <Channel Name="Cameras" Type="Spread [Collections]&lt;Entity [Stride.API.Engine]&gt;" />
+  <Channel Name="CamerPos" Type="Spread [Collections]&lt;Vector3 [3D]&gt;" />
+  <Channel Name="IRendere" Type="Spread [Collections]&lt;IRenderer [Stride.API.Rendering]&gt;" />
+  <Channel Name="Matrix" Type="Spread [Collections]&lt;Matrix [3D]&gt;" />
+  <Channel Name="Model" Type="Entity [Stride.API.Engine]" />
+  <Channel Name="ModelTransform" Type="Matrix [3D]" />
+  <Channel Name="MyFloat" Type="Float32 [Primitive]" />
+  <Channel Name="position" Type="Spread [Collections]&lt;Vector3 [3D]&gt;" />
+  <Channel Name="Projector" Type="Spread [Collections]&lt;Entity [Stride.API.Engine]&gt;" />
+  <Channel Name="ProjektoLight" Type="Spread [Collections]&lt;Entity [Stride.API.Engine]&gt;" />
+  <Channel Name="ProjektoLight2" Type="Spread [Collections]&lt;Entity [Stride.API.Engine]&gt;" />
+  <Channel Name="Resolution" Type="Spread [Collections]&lt;Spread [Collections]&lt;Integer32 [Primitive]&gt;&gt;" />
+  <Channel Name="ResolutionScreens" Type="Spread [Collections]&lt;Int2 [Primitive]&gt;" />
+  <Channel Name="rotate" Type="Spread [Collections]&lt;Vector3 [3D]&gt;" />
+  <Channel Name="ShowHelp" Type="Boolean [Primitive]" />
+  <Channel Name="target" Type="Spread [Collections]&lt;Vector3 [3D]&gt;" />
+  <Channel Name="texture2" Type="Spread [Collections]&lt;Texture [Stride.API.Graphics]&gt;" />
+  <Channel Name="ThrowRatio" Type="Spread [Collections]&lt;Float32 [Primitive]&gt;" />
+</PublicChannels>
