@@ -1,0 +1,76 @@
+[Category("Filter")]
+[Summary("")]
+shader SoftEdgeMask1_TextureFX : FilterBase
+{
+    // Halbe Breite des schwarzen Bereichs nach innen UND außen pro Seite
+    float BlackLeft = 0.0f;
+    float BlackRight = 0.0f;
+    float BlackTop = 0.0f;
+    float BlackBottom = 0.0f;
+
+    float4 Filter(float4 tex0col)
+    {
+        float2 tc = streams.TexCoord;
+        bool isInsideBlue = (tex0col.r > 0.5f);
+        
+        const int steps = 16;
+        for(int y = -steps; y <= steps; y++)
+        {
+            float fy = y / (float)steps; // -1.0 bis +1.0
+
+            for(int x = -steps; x <= steps; x++)
+            {
+                float fx = x / (float)steps; // -1.0 bis +1.0
+
+                // Elliptische Abfrage für saubere Übergänge an den Eckpunkten
+                if (fx * fx + fy * fy <= 1.0f)
+                {
+                    if (!isInsideBlue)
+                    {
+                        // 1. AUSSERHALB des blauen Feldes (im roten Bereich):
+                        //    Prüft, ob im eingestellten Abstand ein blaues Nachbarfeld liegt.
+                        float offsetX = (fx < 0.0f) ? (fx * BlackRight) : (fx * BlackLeft);
+                        float offsetY = (fy < 0.0f) ? (fy * BlackBottom) : (fy * BlackTop);
+                        
+                        float2 samplePos = tc + float2(offsetX, offsetY);
+                        
+                        if (samplePos.x >= 0.0f && samplePos.x <= 1.0f && 
+                            samplePos.y >= 0.0f && samplePos.y <= 1.0f)
+                        {
+                            if (Texture0.SampleLevel(Sampler0, samplePos, 0).r > 0.5f)
+                            {
+                                return float4(0, 0, 0, 1); // Schwarz (Außenhälfte)
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // 2. INNERHALB des blauen Feldes:
+                        //    Breitet sich NUR nach innen aus, wenn innerhalb der Textur (0..1) 
+                        //    tatsächlich ein rotes Nachbarfeld (r <= 0.5f) gefunden wird!
+                        float offsetX = (fx > 0.0f) ? (fx * BlackRight) : (fx * BlackLeft);
+                        float offsetY = (fy > 0.0f) ? (fy * BlackBottom) : (fy * BlackTop);
+                        
+                        float2 samplePos = tc + float2(offsetX, offsetY);
+                        
+                        // Prüft streng innerhalb der Bildgrenzen, ob dort ein roter Nachbar liegt
+                        if (samplePos.x >= 0.0f && samplePos.x <= 1.0f && 
+                            samplePos.y >= 0.0f && samplePos.y <= 1.0f)
+                        {
+                            if (Texture0.SampleLevel(Sampler0, samplePos, 0).r <= 0.5f)
+                            {
+                                return float4(0, 0, 0, 1); // Schwarz (Innenhälfte)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // 3. Rest: Innerhalb = Hellblau (Cyan), Außerhalb = Rot
+        if (isInsideBlue) 
+            return float4(0, 1, 1, 1);
+        else 
+            return float4(1, 0, 0, 1);
+    }
+};
