@@ -2924,7 +2924,7 @@
                 <Choice Kind="ProcessAppFlag" Name="SceneWindow" />
                 <CategoryReference Kind="Category" Name="Stride" NeedsToBeDirectParent="true" />
               </p:NodeReference>
-              <Pin Id="CS1mRjYcBHNOrPlaqOWJuo" Name="Bounds" Kind="InputPin" DefaultValue="629.3333, -667.3333, 787.3333, 558.6667">
+              <Pin Id="CS1mRjYcBHNOrPlaqOWJuo" Name="Bounds" Kind="InputPin" DefaultValue="459.33334, 200.66667, 787.3333, 558.6667">
                 <p:TypeAnnotation LastCategoryFullName="2D" LastDependency="CoreLibBasics.vl">
                   <Choice Kind="TypeFlag" Name="Rectangle" />
                 </p:TypeAnnotation>
@@ -13363,7 +13363,7 @@
             <Patch Id="Tun5ZWW0hIXPnOMEUFJsvD">
               <Canvas Id="AhNRuKN7XRSNeegC7Rg4rh" CanvasType="Group">
                 <ControlPoint Id="H6b7ldgH0vyPMSHyeWwOKJ" Bounds="1172,469" />
-                <ControlPoint Id="TQhdRZGB7aTNAXJ6p8U7kK" Bounds="993,1461" />
+                <ControlPoint Id="TQhdRZGB7aTNAXJ6p8U7kK" Bounds="993,1610" />
                 <ControlPoint Id="ATcm5QeUJXUOaiPEXjk5nu" Bounds="1263,469" />
                 <Node Bounds="956,892,475,662" Id="BVtfGO1NyaEO2TfdpBiGhg">
                   <p:NodeReference LastCategoryFullName="Primitive" LastDependency="Builtin">
