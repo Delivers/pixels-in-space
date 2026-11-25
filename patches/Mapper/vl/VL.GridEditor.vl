@@ -656,9 +656,9 @@
               <Pin Id="AoofGDs0hMfLQ7WJBzKd8g" Name="ScreenId" Kind="InputPin" />
               <Pin Id="Hr07SLak2BUPJIlhmx8KlE" Name="Mode" Kind="InputPin" Visibility="Hidden" />
               <Pin Id="SJewhoRoqSuPAbJFDYbtH7" Name="Source" Kind="InputPin" Visibility="Optional" />
-              <Pin Id="FZkZp0N7lShQbp2UBRKQKW" Name="SoftEdge" Kind="InputPin" Visibility="Optional" />
+              <Pin Id="FZkZp0N7lShQbp2UBRKQKW" Name="SoftEdge" Kind="InputPin" DefaultValue="1" Visibility="Optional" />
               <Pin Id="MaqugBSVSjsPFVwBv9Pr0o" Name="Gamma" Kind="InputPin" DefaultValue="1" Visibility="Optional" />
-              <Pin Id="NeTFXreZYH5NqE1qqxWoFc" Name="SoftedgeSize" Kind="InputPin" DefaultValue="0.5" Visibility="Optional" />
+              <Pin Id="NeTFXreZYH5NqE1qqxWoFc" Name="SoftedgeSize" Kind="InputPin" DefaultValue="0" Visibility="Optional" />
               <Pin Id="PPOsvWkRwcIMq6uATAtwBT" Name="Hidden" Kind="InputPin" Visibility="Optional" />
               <Pin Id="PnxFSohcebYNDpwDGv2AWx" Name="MaskMode" Kind="InputPin" Visibility="Optional" />
               <Pin Id="HEQFN3fSAIaQMMmAeI1gjF" Name="MaskGridId" Kind="InputPin" DefaultValue="-1" Visibility="Optional" />
@@ -739,7 +739,7 @@
               <Pin Id="S0VU1B3zBBTLo49WZ3Ceoc" Name="Source" Kind="OutputPin" />
             </Patch>
             <Patch Id="CYjpkMaKvFEPdUdUePDpPM" Name="SetSoftEdge">
-              <Pin Id="PqkgCbTVgRENem0myczebF" Name="SoftEdge" Kind="InputPin" />
+              <Pin Id="PqkgCbTVgRENem0myczebF" Name="SoftEdge" Kind="InputPin" DefaultValue="1" />
             </Patch>
             <Patch Id="IvJjrTHQocOLtGO4yjemUM" Name="GetSoftEdge">
               <Pin Id="BNI6OpEgCnvPwASowHkQly" Name="SoftEdge" Kind="OutputPin" />

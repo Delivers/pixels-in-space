@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PublicChannels>
+  <Channel Name="BackgroundColor" Type="RGBA [Color]" />
+  <Channel Name="Init2" Type="Boolean [Primitive]" />
+  <Channel Name="Model" Type="Entity [Stride.API.Engine]" />
+  <Channel Name="ModelTransform" Type="Matrix [3D]" />
+  <Channel Name="position" Type="Spread [Collections]&lt;Vector3 [3D]&gt;" />
+  <Channel Name="Resolution" Type="Spread [Collections]&lt;Spread [Collections]&lt;Integer32 [Primitive]&gt;&gt;" />
+  <Channel Name="ResolutionScreens" Type="Spread [Collections]&lt;Int2 [Primitive]&gt;" />
+  <Channel Name="rotate" Type="Spread [Collections]&lt;Vector3 [3D]&gt;" />
+  <Channel Name="ShowHelp" Type="Boolean [Primitive]" />
+  <Channel Name="target" Type="Spread [Collections]&lt;Vector3 [3D]&gt;" />
+  <Channel Name="ThrowRatio" Type="Spread [Collections]&lt;Float32 [Primitive]&gt;" />
+</PublicChannels>

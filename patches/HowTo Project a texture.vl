@@ -2924,7 +2924,7 @@
                 <Choice Kind="ProcessAppFlag" Name="SceneWindow" />
                 <CategoryReference Kind="Category" Name="Stride" NeedsToBeDirectParent="true" />
               </p:NodeReference>
-              <Pin Id="CS1mRjYcBHNOrPlaqOWJuo" Name="Bounds" Kind="InputPin" DefaultValue="459.33334, 200.66667, 787.3333, 558.6667">
+              <Pin Id="CS1mRjYcBHNOrPlaqOWJuo" Name="Bounds" Kind="InputPin" DefaultValue="684, -671.3333, 791.3333, 570">
                 <p:TypeAnnotation LastCategoryFullName="2D" LastDependency="CoreLibBasics.vl">
                   <Choice Kind="TypeFlag" Name="Rectangle" />
                 </p:TypeAnnotation>

@@ -5289,11 +5289,6 @@
           <Patch Id="BHL8LTxVNugOv5GJj6TfcG" Name="Update">
             <Pin Id="ULB5FVnyQxqLNSms3vi77Z" Name="Enable" Kind="InputPin" />
           </Patch>
-          <!--
-
-    ************************  ************************
-
--->
           <ProcessDefinition Id="P0BiINXQDMLPr7jeAt2wBg">
             <Fragment Id="NmLVZFbWszXL2kzZysH1Eh" Patch="OU6mRhXVY90P0LxpWctIoK" Enabled="true" />
             <Fragment Id="VbBaaJRsnr4PiOJFIZcQXo" Patch="BHL8LTxVNugOv5GJj6TfcG" Enabled="true" />
@@ -5759,8 +5754,8 @@
             <Pin Id="VKma4ybjaSrNILKLWN8MkH" Name="Result" Kind="OutputPin" />
           </Node>
           <Pad Id="Az2cQzVWNPtPuWbG9kD82Q" SlotId="RqZF51WGuVsLg0l0pOIxBA" Bounds="252,2830" />
-          <Pad Id="TENja7JdO40MqCieglj3Ca" Comment="" Bounds="412,1330,99,77" ShowValueBox="true" isIOBox="true" />
-          <Node Bounds="410,1239,137,19" Id="OXgKH94zwvbN8wiARKybFY">
+          <Pad Id="TENja7JdO40MqCieglj3Ca" Comment="" Bounds="412,1330,146,90" ShowValueBox="true" isIOBox="true" />
+          <Node Bounds="410,1280,137,19" Id="OXgKH94zwvbN8wiARKybFY">
             <p:NodeReference LastCategoryFullName="Stride.Assets" LastDependency="VL.Stride.Assets.Windows.vl">
               <Choice Kind="NodeFlag" Name="Node" Fixed="true" />
               <Choice Kind="ProcessAppFlag" Name="FileTexture" />
@@ -5910,12 +5905,12 @@
             <Pin Id="Fem4DgkEmshMJTjDdWqmrH" Name="Camera" Kind="InputPin" />
             <Pin Id="FmtoRtECGinLKBlMifc6EF" Name="Output" Kind="OutputPin" />
           </Node>
-          <Pad Id="GmqHbVAtOw2QOpeeidZXJe" Comment="Path" Bounds="412,1210,152,15" ShowValueBox="true" isIOBox="true" Value="..\assets\objects\TestGrid\Pixels-in-Space-3840x1080.png">
+          <Pad Id="GmqHbVAtOw2QOpeeidZXJe" Comment="Path" Bounds="412,1251,152,15" ShowValueBox="true" isIOBox="true" Value="..\assets\photos\Pixels-in-Space-3840x1080.png">
             <p:TypeAnnotation LastCategoryFullName="IO" LastDependency="VL.CoreLib.vl">
               <Choice Kind="TypeFlag" Name="Path" />
             </p:TypeAnnotation>
           </Pad>
-          <Pad Id="QHTSbBpYqZoPnYvip35PTi" Bounds="528,1336,148,73" ShowValueBox="true" isIOBox="true" Value="https://www.vioso.com/tools/testpattern-generator/">
+          <Pad Id="QHTSbBpYqZoPnYvip35PTi" Bounds="567,1339,148,73" ShowValueBox="true" isIOBox="true" Value="https://www.vioso.com/tools/testpattern-generator/">
             <p:TypeAnnotation LastCategoryFullName="Primitive" LastDependency="VL.CoreLib.vl">
               <Choice Kind="ImmutableTypeFlag" Name="String" />
             </p:TypeAnnotation>
@@ -5924,7 +5919,7 @@
               <p:stringtype p:Assembly="VL.Core" p:Type="VL.Core.StringType">Link</p:stringtype>
             </p:ValueBoxSettings>
           </Pad>
-          <Pad Id="R3mhfRNAc9fL7vcwAN79eM" Bounds="204,1291,99,98" ShowValueBox="true" isIOBox="true" Value="True">
+          <Pad Id="R3mhfRNAc9fL7vcwAN79eM" Bounds="204,1291,99,98" ShowValueBox="true" isIOBox="true" Value="False">
             <p:TypeAnnotation LastCategoryFullName="Primitive" LastDependency="VL.CoreLib.vl">
               <Choice Kind="ImmutableTypeFlag" Name="Boolean" />
             </p:TypeAnnotation>
