@@ -1,0 +1,26 @@
+// UVRemap_TextureFX.sdsl  –  vvvv gamma / Stride
+// Liegt in:  <Ordner deines .vl-Patches>\shaders\UVRemap_TextureFX.sdsl
+// -> erscheint als Node "UVRemap" (Stride > Textures > Filter)
+//
+// Texture0 = Remap-Textur  (STMap_Frontal_4096.png/.dds)  R = x, G = y im Quellbild, A = Maske
+// Texture1 = dein Quellbild (z.B. 4000 x 4000, Frontalansicht)
+// Ausgabe  = Textur in der UV-Abwicklung -> direkt als Textur auf das Kabinen-Mesh
+
+[Category("Filter")]
+[Summary("Remaps a source image into the cabin UV layout via an ST map (R=x, G=y, A=mask)")]
+shader UVRemap_TextureFX : TextureFX
+{
+    [Color]
+    float4 Background = float4(0, 0, 0, 1);   // Farbe außerhalb der Abwicklung
+    float  UseMask = 1.0;                     // 1 = Maske (Alpha) anwenden, 0 = Ränder auffüllen
+
+    stage override float4 Shading()
+    {
+        // Koordinate im Quellbild aus der Remap-Textur holen (Daten, kein Farbwert)
+        float4 st  = Texture0.SampleLevel(LinearSampler, streams.TexCoord, 0);
+        // Quellbild an dieser Stelle lesen
+        float4 col = Texture1.SampleLevel(LinearSampler, st.rg, 0);
+        float  m   = lerp(1.0, st.a, UseMask);
+        return lerp(Background, col, m);
+    }
+};

@@ -1,0 +1,54 @@
+// UVRemapEye_TextureFX.sdsl  -  vvvv gamma / Stride
+// Ablegen in:  <Ordner deines .vl-Patches>\shaders\UVRemapEye_TextureFX.sdsl   -> Node "UVRemapEye"
+//
+// Texture0 = PositionMap_4096.dds  (RGB = 3D-Punkt jeder UV-Stelle, normiert auf BoxMin..BoxMax; A = Maske)
+// Texture1 = dein Quellbild: 360 deg-Panorama (Mode 0, equirectangular 2:1) oder Fisheye (Mode 1, quadratisch)
+// Ausgabe  = Textur in der UV-Abwicklung der Kabine -> als Textur auf das Kabinen-Mesh
+//
+// Koordinaten = Modellkoordinaten der Kabine (wie in Blender): x = rechts, y = Richtung Rueckwand, z = oben.
+// Rueckwand-Innenseite y = 0, Oeffnung y = -3, Seitenwaende x = +/-2.88, Decke z = 4.88, Unterkante z = -1.08.
+
+[Category("Filter")]
+[Summary("Projects a 360 degree panorama or fisheye from an eye point onto the cabin UV layout using a position map")]
+shader UVRemapEye_TextureFX : TextureFX
+{
+    float3 Eye = float3(0.0, -1.5, 0.52);   // Augpunkt (Mitte der Kabine, 1,60 ueber der Unterkante)
+    float  Yaw = 0.0;                        // Panorama um die Hochachse drehen (Grad)
+    float  Pitch = 0.0;                      // Panorama kippen (Grad)
+    int    Mode = 0;                         // 0 = Equirectangular 360x180 (2:1), 1 = Fisheye (quadratisch)
+    float  FisheyeFOV = 240.0;               // Bildwinkel des Fisheyes in Grad (Mode 1)
+    [Color]
+    float4 Background = float4(0, 0, 0, 1);
+    float3 BoxMin = float3(-3.0, -3.1, -1.2); // Normierung der Positions-Textur - nicht aendern
+    float3 BoxMax = float3( 3.0,  0.1,  5.0);
+
+    stage override float4 Shading()
+    {
+        float4 pm = Texture0.SampleLevel(LinearSampler, streams.TexCoord, 0);
+        float3 p  = BoxMin + pm.rgb * (BoxMax - BoxMin);
+        float3 d  = normalize(p - Eye);
+
+        float cy = cos(radians(Yaw)),   sy = sin(radians(Yaw));
+        d = float3(cy * d.x - sy * d.y, sy * d.x + cy * d.y, d.z);
+        float cp = cos(radians(Pitch)), sp = sin(radians(Pitch));
+        d = float3(d.x, cp * d.y + sp * d.z, -sp * d.y + cp * d.z);
+
+        float2 uv;
+        if (Mode == 0)
+        {
+            float lon = atan2(d.x, d.y);                 // 0 = Blick zur Rueckwand, + = rechts
+            float lat = asin(clamp(d.z, -1.0, 1.0));     // + = oben
+            uv = float2(0.5 + lon / 6.28318531, 0.5 - lat / 3.14159265);
+        }
+        else
+        {
+            float th = acos(clamp(d.y, -1.0, 1.0));      // Winkel zur Blickrichtung (Rueckwand)
+            float r  = th / radians(FisheyeFOV);         // Bildrand = FisheyeFOV/2
+            float2 q = float2(d.x, d.z);
+            float  l = max(length(q), 1e-6);
+            uv = float2(0.5 + r * q.x / l, 0.5 - r * q.y / l);
+        }
+        float4 col = Texture1.SampleLevel(LinearSampler, uv, 0);
+        return lerp(Background, col, pm.a);
+    }
+};

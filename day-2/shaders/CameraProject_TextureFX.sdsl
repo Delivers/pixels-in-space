@@ -1,0 +1,84 @@
+// CameraProject_TextureFX.sdsl  -  vvvv gamma / Stride
+// Put into:  <folder of your .vl patch>\shaders\CameraProject_TextureFX.sdsl   -> node "CameraProject"
+//
+// Projects the image of one or four vvvv cameras onto the cabin, like real projectors.
+// Output = texture in the UV layout of the cabin -> straight into the material of the cabin mesh.
+//
+// Texture0 = PositionMap_4096.dds  (TextureReader, no sRGB, no mipmaps)
+// Texture1 = NormalMap_4096.dds    (TextureReader, no sRGB, no mipmaps)
+// Texture2 = camera 0 image   (Mode 0: the only camera / Mode 1: BACK wall camera)
+// Texture3 = camera 1 image   (Mode 1: LEFT wall camera)
+// Texture4 = camera 2 image   (Mode 1: RIGHT wall camera)
+// Texture5 = camera 3 image   (Mode 1: CEILING camera)
+// ViewProj0..3 = View * Projection matrix of the matching camera (same matrices you give the camera)
+// CabinWorld   = world transform of the cabin entity in your scene (identity if it sits at the origin)
+//
+// Mode 0 = one camera projects onto everything (like one projector, perfect seen from the camera position)
+// Mode 1 = four cameras, each wall gets its own camera, cross-faded in the rounded edges
+// Mode 8 = debug: world position of the cabin surface as colour (check CabinWorld)
+
+[Category("Filter")]
+[Summary("Projects camera renderings from a vvvv scene onto the cabin UV layout (projective texturing)")]
+shader CameraProject_TextureFX : TextureFX
+{
+    int Mode = 1;
+    float4x4 CabinWorld = float4x4(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+    float4x4 ViewProj0 = float4x4(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+    float4x4 ViewProj1 = float4x4(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+    float4x4 ViewProj2 = float4x4(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+    float4x4 ViewProj3 = float4x4(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1);
+    float Sharpness = 8.0;                       // Mode 1: width of the cross-fade in the rounded edges
+    [Color] float4 Background = float4(0, 0, 0, 1);
+    float3 BoxMin = float3(-3.0, -3.1, -1.2);    // normalisation of the position map - do not change
+    float3 BoxMax = float3( 3.0,  0.1,  5.0);
+
+    // world position -> texture coordinate of a camera (xy) and visibility (z)
+    float3 Project(float4x4 vp, float3 pw)
+    {
+        float4 c = mul(float4(pw, 1.0), vp);
+        float2 ndc = c.xy / c.w;
+        float ok = (c.w > 0.0 && abs(ndc.x) <= 1.0 && abs(ndc.y) <= 1.0) ? 1.0 : 0.0;
+        return float3(ndc.x * 0.5 + 0.5, 0.5 - ndc.y * 0.5, ok);
+    }
+
+    stage override float4 Shading()
+    {
+        float2 tc = streams.TexCoord;
+        float4 pm = Texture0.SampleLevel(LinearSampler, tc, 0);
+        float4 nm = Texture1.SampleLevel(LinearSampler, tc, 0);
+        float3 pb = BoxMin + pm.rgb * (BoxMax - BoxMin);       // cabin coordinates as in Blender (z up)
+        float3 nb = normalize(nm.rgb * 2.0 - 1.0);
+        float3 po = float3(pb.x, pb.z, -pb.y);                  // same point in the imported model (y up)
+        float3 pw = mul(float4(po, 1.0), CabinWorld).xyz;       // point in your vvvv scene
+        float4 col = Background;
+
+        if (Mode == 0)
+        {
+            float3 a = Project(ViewProj0, pw);
+            col = lerp(Background, Texture2.SampleLevel(LinearSampler, a.xy, 0), a.z);
+        }
+        else if (Mode == 1)
+        {
+            // weights from the surface direction: back wall, left wall, right wall, ceiling
+            float wb = pow(saturate(-nb.y), Sharpness);
+            float wl = pow(saturate( nb.x), Sharpness);
+            float wr = pow(saturate(-nb.x), Sharpness);
+            float wc = pow(saturate(-nb.z), Sharpness);
+            float sum = max(wb + wl + wr + wc, 1e-5);
+            float3 a0 = Project(ViewProj0, pw);
+            float3 a1 = Project(ViewProj1, pw);
+            float3 a2 = Project(ViewProj2, pw);
+            float3 a3 = Project(ViewProj3, pw);
+            float4 c0 = lerp(Background, Texture2.SampleLevel(LinearSampler, a0.xy, 0), a0.z);
+            float4 c1 = lerp(Background, Texture3.SampleLevel(LinearSampler, a1.xy, 0), a1.z);
+            float4 c2 = lerp(Background, Texture4.SampleLevel(LinearSampler, a2.xy, 0), a2.z);
+            float4 c3 = lerp(Background, Texture5.SampleLevel(LinearSampler, a3.xy, 0), a3.z);
+            col = (c0 * wb + c1 * wl + c2 * wr + c3 * wc) / sum;
+        }
+        else
+        {
+            col = float4(frac(pw), 1.0);
+        }
+        return lerp(Background, col, pm.a);
+    }
+};

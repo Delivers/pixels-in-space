@@ -1,0 +1,111 @@
+// Room3D_TextureFX.sdsl  -  vvvv gamma / Stride
+// Put into:  <folder of your .vl patch>\shaders\Room3D_TextureFX.sdsl   -> node "Room3D"
+//
+// Creates content for the cabin directly in 3D space. The output is a texture in the
+// UV layout of the cabin (UV_Innen_Abwicklung) and goes straight onto the mesh material.
+//
+// Texture0 = PositionMap_4096.dds   (3D point of every UV pixel, normalised to BoxMin..BoxMax, A = mask)
+// Texture1 = NormalMap_4096.dds     (surface direction, pointing into the room, encoded n*0.5+0.5)
+// Texture2 = your image / tile      (only used in Mode 0)
+// Load Texture0 and Texture1 with TextureReader (no sRGB, no mipmaps).
+//
+// Model coordinates (as in Blender): x = right, y = towards back wall, z = up.
+// Back wall y = 0, opening y = -3, side walls x = +/-2.88, ceiling z = 4.88, bottom edge z = -1.08.
+//
+// Mode 0 = Triplanar: the image is projected straight onto every wall (back wall, side walls,
+//          ceiling) at true scale, and cross-faded in the rounded edges. Good for tiles/patterns.
+// Mode 1 = 3D cells (procedural example, animated with Time). Replace with your own 3D function.
+// Mode 2 = Debug: position as colour.  Mode 3 = Debug: normal as colour.
+
+[Category("Source")]
+[Summary("Generates seamless cabin content in 3D space using a position map and a normal map")]
+shader Room3D_TextureFX : TextureFX
+{
+    int    Mode = 0;
+    float  TileSize = 1.0;                  // Mode 0: size of one image repeat in model units
+    float2 Offset = float2(0.0, 0.0);       // Mode 0: shift of the image in model units
+    float  Rotation = 0.0;                  // Mode 0: rotation of the image in degrees
+    float  Sharpness = 8.0;                 // Mode 0: width of the cross-fade in the rounded edges (higher = narrower)
+    float  CellSize = 0.5;                  // Mode 1: cell size in model units
+    float  Time = 0.0;                      // Mode 1: connect a running time for animation
+    [Color] float4 ColorA = float4(0.77, 0.91, 0.80, 1);
+    [Color] float4 ColorB = float4(0.09, 0.27, 0.20, 1);
+    [Color] float4 LineColor = float4(0.05, 0.12, 0.09, 1);
+    [Color] float4 Background = float4(0, 0, 0, 1);
+    float3 BoxMin = float3(-3.0, -3.1, -1.2);   // normalisation of the position map - do not change
+    float3 BoxMax = float3( 3.0,  0.1,  5.0);
+
+    float2 Plane(float2 q)
+    {
+        float a = radians(Rotation);
+        float c = cos(a), s = sin(a);
+        q = float2(c * q.x - s * q.y, s * q.x + c * q.y);
+        return frac((q - Offset) / TileSize);   // frac = repeat the image
+    }
+
+    float3 Hash3(float3 p)
+    {
+        p = float3(dot(p, float3(127.1, 311.7, 74.7)),
+                   dot(p, float3(269.5, 183.3, 246.1)),
+                   dot(p, float3(113.5, 271.9, 124.6)));
+        return frac(sin(p) * 43758.5453);
+    }
+
+    float4 Cells(float3 p)
+    {
+        float3 g = p / CellSize;
+        float3 i = floor(g);
+        float f1 = 9.0, f2 = 9.0;
+        float3 id = 0;
+        for (int x = -1; x <= 1; x++)
+        for (int y = -1; y <= 1; y++)
+        for (int z = -1; z <= 1; z++)
+        {
+            float3 c = i + float3(x, y, z);
+            float3 h = Hash3(c);
+            float3 fp = c + 0.5 + 0.4 * sin(Time + 6.2831853 * h);
+            float d = length(fp - g);
+            if (d < f1) { f2 = f1; f1 = d; id = h; }
+            else if (d < f2) { f2 = d; }
+        }
+        float edge = saturate((f2 - f1) / 0.08);
+        float4 fill = lerp(ColorA, ColorB, saturate(f1 * 1.2 + 0.3 * id.x));
+        return lerp(LineColor, fill, edge);
+    }
+
+    stage override float4 Shading()
+    {
+        float2 tc = streams.TexCoord;
+        float4 pm = Texture0.SampleLevel(LinearSampler, tc, 0);
+        float4 nm = Texture1.SampleLevel(LinearSampler, tc, 0);
+        float3 p = BoxMin + pm.rgb * (BoxMax - BoxMin);
+        float3 n = normalize(nm.rgb * 2.0 - 1.0);
+        float4 col;
+
+        if (Mode == 0)
+        {
+            float3 w = pow(abs(n), Sharpness);
+            w /= (w.x + w.y + w.z);
+            // each wall seen from inside the room, image upright
+            float2 uvX = Plane(float2( p.y * sign(n.x), -p.z));   // side walls
+            float2 uvY = Plane(float2( p.x * -sign(n.y), -p.z));  // back wall
+            float2 uvZ = Plane(float2( p.x * sign(n.z), -p.y));   // ceiling
+            col = Texture2.SampleLevel(LinearSampler, uvX, 0) * w.x
+                + Texture2.SampleLevel(LinearSampler, uvY, 0) * w.y
+                + Texture2.SampleLevel(LinearSampler, uvZ, 0) * w.z;
+        }
+        else if (Mode == 1)
+        {
+            col = Cells(p);
+        }
+        else if (Mode == 2)
+        {
+            col = float4(pm.rgb, 1);
+        }
+        else
+        {
+            col = float4(nm.rgb, 1);
+        }
+        return lerp(Background, col, pm.a);
+    }
+};
