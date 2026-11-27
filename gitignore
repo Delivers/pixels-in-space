@@ -1,0 +1,4 @@
+# DDS-Texturen ignorieren (Groß- und Kleinschreibung)
+*.dds
+*.DDS
+*.[dD][dD][sS]
